@@ -1,5 +1,5 @@
 streamlit==1.48.0
-base64==1.4.2
+base64==9.1
 google-generativeai==0.8.5
 dotenv==0.9.9
 pandas==2.3.1
