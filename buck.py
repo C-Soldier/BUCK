@@ -172,10 +172,10 @@ def askGemini(question, chat_session1):
         st.error(f"Error generating response: {e}")
         return None
 
-def showGemini(image_data, chat_session2):
+def showGemini(image_data, chat_session1):
     try:
         image = {'mime_type': 'image/jpeg', 'data': image_data}
-        response = chat_session2.send_message([image])
+        response = chat_session1.send_message([image])
         json_string = response.text
         start = json_string.find("{")
         end = json_string.find("}") + 1
@@ -220,7 +220,6 @@ with st.sidebar:
     if st.button("💲New Money Talk"):
         st.session_state.requests = []
         st.session_state.chat_session1 = model1.start_chat()
-        st.session_state.chat_session2 = model2.start_chat()
         st.session_state.store = True
         st.rerun()
     
@@ -265,7 +264,6 @@ except Exception as e:
 
 # If the file is read successfully, we can use its content as a prompt
 askGemini(text, st.session_state.chat_session1)
-askGemini(text, st.session_state.chat_session2)
 
 if prompt and prompt.text:
     #To display the messages from the user in the Streamlit app
@@ -292,7 +290,7 @@ if prompt and prompt["files"]:
     st.session_state.requests.append({'role': 'user', 'content': prompt["files"][0]})
     
     #send the image data to the chatmodel
-    request = showGemini(prompt["files"][0].read(), st.session_state.chat_session2)
+    request = showGemini(prompt["files"][0].read(), st.session_state.chat_session1)
     
     #Display the response from the chatbot about the image
     st.chat_message("assistant", avatar="🤑").markdown(request)
