@@ -32,7 +32,7 @@ st.markdown(
 
 #Background
 # Load and encode the image
-image_path = "buck.jpg"
+image_path = "buck_wallpaper.jpg"
 
 with open(image_path, "rb") as image_file:
     encoded_image = base64.b64encode(image_file.read()).decode()
@@ -172,10 +172,10 @@ def askGemini(question, chat_session1):
         st.error(f"Error generating response: {e}")
         return None
 
-def showGemini(image_data, chat_session1):
+def showGemini(image_data, chat_session2):
     try:
         image = {'mime_type': 'image/jpeg', 'data': image_data}
-        response = chat_session1.send_message([image])
+        response = chat_session2.send_message([image])
         json_string = response.text
         start = json_string.find("{")
         end = json_string.find("}") + 1
@@ -195,14 +195,11 @@ def delete():
         if st.checkbox(key):
             checked_key = key
     try:
-        if len(st.session_state.recentChats) > 0:
-            if st.button("Delete"):
-                st.session_state.recentChats.pop(checked_key)
-                st.session_state.requests = []
-                st.session_state.store = True
-                st.rerun()
-        else:
-            st.write("There are no talks to  delete")
+        if st.button("Delete"):
+            st.session_state.recentChats.pop(checked_key)
+            st.session_state.requests = []
+            st.session_state.store = True
+            st.rerun()
     except KeyError:
         pass
 
@@ -220,6 +217,7 @@ with st.sidebar:
     if st.button("💲New Money Talk"):
         st.session_state.requests = []
         st.session_state.chat_session1 = model1.start_chat()
+        st.session_state.chat_session2 = model2.start_chat()
         st.session_state.store = True
         st.rerun()
     
@@ -233,14 +231,20 @@ with st.sidebar:
 
     #This is used to activate the delete multiple chats function
     if st.button("Delete Talks💀"):
-        delete()
+        if len(st.session_state.recentChats) > 0:
+            delete()
+        else:
+            st.toast("There are not talks to delete")
     
     #This is used to delete all the chats
     if st.button("Delete All Talks☠"):
-        st.session_state.recentChats.clear()
-        st.session_state.requests.clear()
-        st.session_state.store = True
-        st.rerun()
+        if len(st.session_state.recentChats) > 0:
+            st.session_state.recentChats.clear()
+            st.session_state.requests.clear()
+            st.session_state.store = True
+            st.rerun()
+        else:
+            st.toast("There are not talks to delete")
             
 
 #Display all the historical messages
@@ -264,6 +268,7 @@ except Exception as e:
 
 # If the file is read successfully, we can use its content as a prompt
 askGemini(text, st.session_state.chat_session1)
+askGemini(text, st.session_state.chat_session2)
 
 if prompt and prompt.text:
     #To display the messages from the user in the Streamlit app
@@ -290,7 +295,7 @@ if prompt and prompt["files"]:
     st.session_state.requests.append({'role': 'user', 'content': prompt["files"][0]})
     
     #send the image data to the chatmodel
-    request = showGemini(prompt["files"][0].read(), st.session_state.chat_session1)
+    request = showGemini(prompt["files"][0].read(), st.session_state.chat_session2)
     
     #Display the response from the chatbot about the image
     st.chat_message("assistant", avatar="🤑").markdown(request)
