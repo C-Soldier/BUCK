@@ -18,7 +18,7 @@ BillTracker = st.Page(
 #Financial News Page
 
 #Logo
-st.logo("Buck.png", size="large")
+st.logo("buck_logo.png", size="large")
 
 pg = st.navigation([Chatbot, BillTracker], position='top')
 pg.run()
