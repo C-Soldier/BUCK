@@ -232,7 +232,7 @@ with st.sidebar:
         if len(st.session_state.recentChats) > 0:
             delete()
         else:
-            st.toast("There are not talks to delete")
+            st.toast("There are no talks to delete")
     
     #This is used to delete all the chats
     if st.button("Delete All Talks☠"):
@@ -242,7 +242,7 @@ with st.sidebar:
             st.session_state.store = True
             st.rerun()
         else:
-            st.toast("There are not talks to delete")
+            st.toast("There are no talks to delete")
             
 
 #Display all the historical messages
