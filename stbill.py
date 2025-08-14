@@ -23,7 +23,7 @@ st.markdown("""
 
 #Background
 # Load and encode the image
-image_path = "bUck.jpeg"
+image_path = "billtracker_wallpaper.jpeg"
 
 with open(image_path, "rb") as image_file:
     encoded_image = base64.b64encode(image_file.read()).decode()
@@ -261,3 +261,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
