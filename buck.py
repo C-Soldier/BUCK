@@ -201,7 +201,7 @@ def delete():
         if st.checkbox(key):
             checked_key = key
     try:
-        if st.button("Delete"):
+        if st.button("Delete", width=250):
             st.session_state.recentChats.pop(checked_key)
             st.session_state.requests = []
             st.session_state.store = True
@@ -222,7 +222,7 @@ st.set_page_config(
 #sidebar controls
 with st.sidebar:
     #New chat button 
-    if st.button("💲New Money Talk"):
+    if st.button("💲New Money Talk", width=250):
         st.session_state.requests = []
         st.session_state.chat_session1 = model1.start_chat()
         st.session_state.store = True
@@ -231,20 +231,20 @@ with st.sidebar:
     with st.container():
         "Recent Money Talks💰:"
         for key, value in st.session_state.recentChats.items():
-            if st.button(key):
+            if st.button(key, width=250):
                 st.session_state.requests = value
                 st.session_state.store = False
                 st.rerun()
 
     #This is used to activate the delete multiple chats function
-    if st.button("Delete Talks💀"):
+    if st.button("Delete Talks💀", width=250):
         if len(st.session_state.recentChats) > 0:
             delete()
         else:
             st.toast("There are no talks to delete")
     
     #This is used to delete all the chats
-    if st.button("Delete All Talks☠"):
+    if st.button("Delete All Talks☠", width=250):
         if len(st.session_state.recentChats) > 0:
             st.session_state.recentChats.clear()
             st.session_state.requests.clear()
