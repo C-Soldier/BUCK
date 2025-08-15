@@ -1,11 +1,17 @@
 #USING GEMINI
 
 # Import necessary libraries
+#The LLM we'll be using
 import google.generativeai as genai
+#To be able to load the API key from the '.env' file
 from dotenv import load_dotenv as lenv
+#To be able to load the API key from the '.env' file
 import os
+#To be able to use streamlit
 import streamlit as st
+#For customization for the chatbot's prompt tuning
 import json
+#For customization of using the st.markdown
 import base64
 
 # --- APP CUSTOMIZATION SECTION ---
@@ -26,7 +32,7 @@ st.markdown("""
 st.markdown(
     "<h4 style='text-align: center; " 
     "color: #FFFFFF;" 
-    "'><strong>Ask me before you go broke.</strong></h4>",
+    "'><strong>Ask me before you go broke</strong></h4>",
     unsafe_allow_html=True)
 
 
@@ -152,7 +158,8 @@ if "title" not in st.session_state:
     st.session_state.title = None
 
 #Other variables for the chatbot's functions
-file_path = "prompts.txt"
+casual = "casual.txt"
+professional = "professional.txt"
 text = ""
 
 
@@ -187,7 +194,7 @@ def showGemini(image_data, chat_session1):
         return None
  
 #If the user wishes to delete mulitple chats at their choosing   
-@st.dialog("Delete Multiple Talks")
+@st.dialog("Which talk(s) would you like to delete?")
 def delete():
     checked_key = None
     for key in st.session_state.recentChats.keys():
@@ -201,6 +208,8 @@ def delete():
             st.rerun()
     except KeyError:
         pass
+
+
 
 
 #Streamlit Customization
@@ -243,7 +252,13 @@ with st.sidebar:
             st.rerun()
         else:
             st.toast("There are no talks to delete")
-            
+    
+    #To let the user customize the chatbot's personality
+    tone = st.radio("Customize Buck's tone", ["Casual😄", "Professional💼"])
+    if tone == "Casual😄":
+        persona = casual
+    else:
+        persona = professional     
 
 #Display all the historical messages
 for request in st.session_state.requests:
@@ -259,7 +274,7 @@ file_type=["jpg", "jpeg", "png", "webp", "gif"]#Specify allowed file types
 )
 
 try:
-    with open(file_path) as file:
+    with open(persona) as file:
         text = file.read()
 except Exception as e:
     st.error(f"ERROR: {e}")
@@ -284,7 +299,7 @@ if prompt and prompt.text:
     st.session_state.requests.append({'role': 'assistant', 'content': request})
 
 #If the user has uploaded an image file, process it
-if prompt and prompt["files"]:
+elif prompt and prompt["files"]:
     #To display the image uploaded by the user
     st.chat_message("user").image(prompt["files"][0])
     
