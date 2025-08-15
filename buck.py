@@ -228,6 +228,8 @@ with st.sidebar:
         st.session_state.store = True
         st.rerun()
     
+    st.divider()
+
     with st.container():
         "Recent Money Talks💰:"
         for key, value in st.session_state.recentChats.items():
@@ -235,6 +237,8 @@ with st.sidebar:
                 st.session_state.requests = value
                 st.session_state.store = False
                 st.rerun()
+
+    st.divider()
 
     #This is used to activate the delete multiple chats function
     if st.button("Delete Talks💀", width=250):
@@ -253,6 +257,8 @@ with st.sidebar:
         else:
             st.toast("There are no talks to delete")
     
+    st.divider()
+
     #To let the user customize the chatbot's personality
     tone = st.radio("Customize Buck's tone", ["Casual😄", "Professional💼"])
     if tone == "Casual😄":
