@@ -1,4 +1,4 @@
-# Import necessary libraries
+# Importing the necessary libraries
 # The LLM we'll be using
 import google.generativeai as genai
 # To be able to load the API key from the '.env' file
