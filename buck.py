@@ -1,15 +1,15 @@
 # Import necessary libraries
-#The LLM we'll be using (Gemini)
+# The LLM we'll be using
 import google.generativeai as genai
-#To be able to load the API key from the '.env' file
+# To be able to load the API key from the '.env' file
 from dotenv import load_dotenv as lenv
-#To be able to load the API key from the '.env' file
+# To be able to load the API key from the '.env' file
 import os
-#To be able to use streamlit
+# To be able to use streamlit
 import streamlit as st
-#For customization for the chatbot's prompt tuning
+# For customization for the chatbot's prompt tuning
 import json
-#For customization of using the st.markdown
+# For customization of using the st.markdown
 import base64
 
 # --- APP CUSTOMIZATION SECTION ---
@@ -34,7 +34,7 @@ st.markdown(
     unsafe_allow_html=True)
 
 
-#Background
+# Background
 # Load and encode the image
 image_path = "buck_wallpaper.jpg"
 
@@ -124,45 +124,45 @@ lenv()  # To load the api variable from .env file
 secret_key = os.getenv("API") #A assign the api to a variable
 
 try:
-    #Configurethe the generative model 
+    # Configurethe the generative model 
     genai.configure(api_key=secret_key)
 except Exception as e:
-    #If failed to find api, the app will stop
+    # If failed to find api, the app will stop
     st.error(f"Error configuring API key: {e}")
     st.stop()
 
 # Configure/set up the generative model
 model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"}) #Using Gemini 2.5 Flash model
 
-#session state initialization for the chatbot
+# session state initialization for the chatbot
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = model.start_chat(history=[])
 
-#Session State variables
-#A place to hold the messages
+# Session State variables
+# A place to hold the messages
 if "chats" not in st.session_state:
     st.session_state.chats = []
 
-#To store the conversations made between the user and chabot
+# To store the conversations made between the user and chabot
 if "recentChats" not in st.session_state:
     st.session_state.recentChats = {}
 
-#This varible was created to let the program know when to create a new conversation
+# This varible was created to let the program know when to create a new conversation
 if "store_chat" not in st.session_state:
     st.session_state.store_chat = True
     
-#This is to store the title of the conversation created by the chatbot
+# This is to store the title of the conversation created by the chatbot
 if "chat_title" not in st.session_state:
     st.session_state.chat_title = None
 
-#Other variables for the chatbot's functions
-#To load the casual persona for the chatbot's personality
+# Other variables for the chatbot's functions
+# To load the casual persona for the chatbot's personality
 casual_persona = "casual.txt"
-#To load the professional persona for the chatbot's personality
+# To load the professional persona for the chatbot's personality
 professional_persona = "professional.txt"
 text = ""
 
-#Functions
+# Functions
 def askGemini(question, chat_session):
     try:
         response = chat_session.send_message(question)
@@ -192,7 +192,7 @@ def showGemini(image_data, chat_session):
         st.error(f"Error processing image: {e}")
         return None
  
-#If the user wishes to delete any of the conversations  
+# If the user wishes to delete any of the conversations  
 @st.dialog("Which talk(s) would you like to delete?")
 def delete():
     checked_key = None
@@ -208,26 +208,26 @@ def delete():
     except KeyError:
         pass
 
-#Streamlit Customization
+# Streamlit App Customization
 st.set_page_config(
     page_title="BUCK",
     page_icon="💸",
     layout="centered"
 )
 
-#sidebar controls
+# sidebar controls
 with st.sidebar:
-    #To start a new conversation with the chatbot
+    # To start a new conversation with the chatbot
     if st.button("💲New Money Talk", width=250):
         st.session_state.chats = []
         st.session_state.chat_session = model.start_chat()
         st.session_state.store_chat = True
         st.rerun()
     
-    #To properly seperate the different section of the sidebar
+    # To properly seperate the different section of the sidebar
     st.divider()
 
-    #To display each conversation made between the user and the chatbot
+    # To display each conversation made between the user and the chatbot
     with st.container():
         "Recent Money Talks💰:"
         for key, value in st.session_state.recentChats.items():
@@ -238,14 +238,14 @@ with st.sidebar:
 
     st.divider()
 
-    #This is used to activate the delete chats function
+    # This is used to activate the delete chats function
     if st.button("Delete Talks💀", width=250):
         if len(st.session_state.recentChats) > 0:
             delete()
         else:
             st.toast("There are no talks to delete")
     
-    #This is used to delete ALL the conversations
+    # This is used to delete ALL the conversations
     if st.button("Delete All Talks☠", width=250):
         if len(st.session_state.recentChats) > 0:
             st.session_state.recentChats.clear()
@@ -257,7 +257,7 @@ with st.sidebar:
     
     st.divider()
 
-    #To let the user choose the chatbot's personality
+    # To let the user choose the chatbot's personality
     tone = st.radio("Customize Buck's tone", ["Casual😄", "Professional💼"])
     if tone == "Casual😄":
         persona = casual_persona
@@ -265,18 +265,18 @@ with st.sidebar:
         persona = professional_persona 
 
 for chat in st.session_state.chats:
-    #Avatar customizations
+    # Avatar customizations
     avatar = chat.get("avatar", "💲" if chat.get('role') == 'assistant' else "🤑")
-    #Display all the historical messages
+    # Display all the historical messages
     st.chat_message(chat['role'], avatar=avatar).markdown(chat['content'])
 
-#Input area for the user to type their message or upload a file for the chatbot
+# Input area for the user to type their message or upload a file for the chatbot
 prompt = st.chat_input("Now, Let's Talk Finance 🤑",
 accept_file=True,  # Allow file uploads
 file_type=["jpg", "jpeg", "png", "webp", "gif"]#To specify which file types are accepted
 )
 
-#To send the prompt file of the chatbot's persona to the chabot
+# To send the prompt file of the chatbot's persona to the chabot
 try:
     with open(persona) as file:
         text = file.read()
@@ -287,39 +287,39 @@ except Exception as e:
 askGemini(text, st.session_state.chat_session)
 
 if prompt and prompt.text:
-    #To display the messages from the user in the Streamlit app
+    # To display the messages from the user in the Streamlit app
     st.chat_message("user", avatar="🤑").markdown(prompt.text)
     
-    #To store each of the messages
+    # To store each of the messages
     st.session_state.chats.append({'role': 'user', 'content': prompt.text})
     
-    #send the prompt to the chatmodel
+    # send the prompt to the chatmodel
     request = askGemini(prompt.text, st.session_state.chat_session)
     
-    #Show chatbot responses
+    # Show chatbot responses
     st.chat_message("assistant", avatar="💲").markdown(request)
     
-    #To store the chatbot responses in the session state
+    # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': request})
 
-#If the user has uploaded an image file, process it
+# If the user has uploaded an image file, process it
 elif prompt and prompt["files"]:
-    #To display the image uploaded by the user
+    # To display the image uploaded by the user
     st.chat_message("user").image(prompt["files"][0])
     
-    #To store each of the messages
+    # To store each of the messages
     st.session_state.chats.append({'role': 'user', 'content': prompt["files"][0]})
     
-    #send the image data to the chatmodel
+    # send the image data to the chatmodel
     request = showGemini(prompt["files"][0].read(), st.session_state.chat_session)
     
-    #Display the response from the chatbot about the image
+    # Display the response from the chatbot about the image
     st.chat_message("assistant", avatar="🤑").markdown(request)
     
-    #To store the chatbot responses in the session state
+    # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': request})
 
-#To store each conversation in the recent chats dict
+# To store each conversation in the recent chats dict
 if st.session_state.store_chat and (prompt and prompt.text) or (prompt and prompt["files"]):
     st.session_state.recentChats.update({st.session_state.chat_title: st.session_state.chats})
     st.session_state.store_chat = False
