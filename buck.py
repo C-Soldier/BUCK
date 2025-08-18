@@ -28,7 +28,7 @@ st.markdown("""
     unsafe_allow_html=True)
 
 st.markdown(
-    "<h4 style='text-align: center; " 
+    "<h4 style='text-align: center;' " 
     "color: #FFFFFF;" 
     "'><strong>ASK ME BEFORE YOU GO BROKE</strong></h4>",
     unsafe_allow_html=True)
@@ -163,6 +163,7 @@ professional_persona = "professional.txt"
 text = ""
 
 # Functions
+# This function is created to be ablt to talk to the chatbot
 def askGemini(question, chat_session):
     try:
         response = chat_session.send_message(question)
@@ -177,10 +178,11 @@ def askGemini(question, chat_session):
         st.error(f"Error generating response: {e}")
         return None
 
+# THis function is used to send images to the chabot
 def showGemini(image_data, chat_session):
     try:
         image = {'mime_type': 'image/jpeg', 'data': image_data}
-        response = chat_session.send_message([image])
+        response = chat_session.send_message(image)
         json_string = response.text
         start = json_string.find("{")
         end = json_string.find("}") + 1
@@ -294,13 +296,13 @@ if prompt and prompt.text:
     st.session_state.chats.append({'role': 'user', 'content': prompt.text})
     
     # send the prompt to the chatmodel
-    request = askGemini(prompt.text, st.session_state.chat_session)
+    chat = askGemini(prompt.text, st.session_state.chat_session)
     
     # Show chatbot responses
-    st.chat_message("assistant", avatar="💲").markdown(request)
+    st.chat_message("assistant", avatar="💲").markdown(chat)
     
     # To store the chatbot responses in the session state
-    st.session_state.chats.append({'role': 'assistant', 'content': request})
+    st.session_state.chats.append({'role': 'assistant', 'content': chat})
 
 # If the user has uploaded an image file, process it
 elif prompt and prompt["files"]:
@@ -311,13 +313,13 @@ elif prompt and prompt["files"]:
     st.session_state.chats.append({'role': 'user', 'content': prompt["files"][0]})
     
     # send the image data to the chatmodel
-    request = showGemini(prompt["files"][0].read(), st.session_state.chat_session)
+    chat = showGemini(prompt["files"][0].read(), st.session_state.chat_session)
     
     # Display the response from the chatbot about the image
-    st.chat_message("assistant", avatar="🤑").markdown(request)
+    st.chat_message("assistant", avatar="🤑").markdown(chat)
     
     # To store the chatbot responses in the session state
-    st.session_state.chats.append({'role': 'assistant', 'content': request})
+    st.session_state.chats.append({'role': 'assistant', 'content': chat})
 
 # To store each conversation in the recent chats dict
 if st.session_state.store_chat and (prompt and prompt.text) or (prompt and prompt["files"]):
