@@ -237,7 +237,7 @@ with st.sidebar:
                 st.session_state.chats = value
                 st.session_state.store_chat = False
                 st.rerun()
-
+  
     st.divider()
 
     # This is used to activate the delete chats function
@@ -305,7 +305,7 @@ if prompt and prompt.text:
     st.session_state.chats.append({'role': 'assistant', 'content': chat})
 
 # If the user has uploaded an image file, process it
-elif prompt and prompt["files"]:
+if prompt and prompt["files"]:
     # To display the image uploaded by the user
     st.chat_message("user").image(prompt["files"][0])
     
