@@ -239,7 +239,7 @@ if st.session_state.bills:
 
 
 #The column widths for the table, instead of a normal dataframe so we can add the delete button
-    col_widths = [2, 2, 2, 2, 2, 2, 1]
+    col_widths = [2, 2, 2, 3, 2, 3, 1]
 
 
 #Gives the title for the rows
@@ -292,6 +292,7 @@ if st.session_state.bills:
     else:
         st.info("✅ No upcoming deadlines in the next 3 days.")
 #Aaron Greene’s Work ദ്ദി ˉ͈̀꒳ˉ͈́ )✧
+
 
 
 
