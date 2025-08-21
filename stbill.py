@@ -262,6 +262,7 @@ if st.session_state.bills:
         #Deletes the bill data at the exact row next to the delete clicked
         if row_cols[6].button("🗑", key=f"delete_{idx}"):
             st.session_state.bills.pop(idx)
+            st.rerun()
 
 
            
@@ -291,6 +292,7 @@ if st.session_state.bills:
     else:
         st.info("✅ No upcoming deadlines in the next 3 days.")
 #Aaron Greene’s Work ദ്ദി ˉ͈̀꒳ˉ͈́ )✧
+
 
 
 
