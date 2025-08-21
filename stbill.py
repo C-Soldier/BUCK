@@ -23,7 +23,7 @@ st.markdown("""
 
 #Background
 # Load and encode the image
-image_path = "billtracker_wallpaper.jpeg"
+image_path = "bUck.jpeg"
 
 with open(image_path, "rb") as image_file:
     encoded_image = base64.b64encode(image_file.read()).decode()
@@ -112,21 +112,31 @@ st.set_page_config(
     layout="centered"
 )
 
-# Session state to store bills between reruns
+
+
+
+
+#This checks to see if “bills” is in the session, this will allow it to store the data the user entered even after reruns.
 if "bills" not in st.session_state:
     st.session_state.bills = []
 
 
-#Form for entering bills
-with st.form("bill_form", clear_on_submit=True):
+
+
+#The form for entering bills using streamlit’s input functions
+with st.form("bill_form"):
     st.subheader("➕ Add New Bill")
     bill_type = st.selectbox("Bill Type", ["Utility", "Subscription", "Loan", "Other"])
     bill_name = st.text_input("Bill Name (e.g., Internet, Netflix)",key="input_bill_name")
     service_name = st.text_input("Service Provider",key="input_service_name")
 
 
+
+
     total_amount_input = st.text_input("Total Amount of Bill (e.g., $100.00)",key="input_total_amount")
     amount_paid_input = st.text_input("Amount Paid (e.g., $25.00)",key="input_amount_paid")
+
+
 
 
     bill_date = st.date_input("Bill Date", value=datetime.date.today())
@@ -136,6 +146,17 @@ with st.form("bill_form", clear_on_submit=True):
 
     submitted = st.form_submit_button("➕Add Bill")
 
+
+#The line of code to allow users to enter new bills, the button is below the rest of the code
+
+
+def clear_inputs():
+    st.session_state.input_bill_name = ""
+    st.session_state.input_service_name = ""
+    st.session_state.input_total_amount = ""
+    st.session_state.input_amount_paid = ""
+
+
 if submitted:
     try:
         # Convert user inputs into float values
@@ -143,12 +164,15 @@ if submitted:
         amount_paid = float(amount_paid_input.replace('$', '').replace(',', '').strip())
 
 
-        # Calculate remaining amount
+
+
+ #The code that will calculate remaining amount
         amount_due = total_amount - amount_paid
         if amount_due < 0:
             st.warning("⚠️ Amount paid is greater than total bill. Adjusting to $0 due.")
-            st.toast('⚠️ Amount paid is greater than total bill')
             amount_due = 0.0
+
+
 
 
         # Create Bill_Type instance (you may want to extend the class to handle amount_paid too)
@@ -160,6 +184,8 @@ if submitted:
             bill_date=bill_date,
             bill_status=bill_status
         )
+
+
 
 
         # Store all relevant info
@@ -176,23 +202,33 @@ if submitted:
         }
 
 
+
+
         st.session_state.bills.append(bill_data)
         st.success("☑ Bill added successfully!")
+
+
 
 
     except ValueError:
         st.error(" Invalid amount format. Use currency like $100.00")
 
+
+#The button to add new bills
+st.button("Make New Bill", on_click=clear_inputs)
 # Display Summary
 if st.session_state.bills:
     st.subheader("📊 Payment Overview")
 
+
     df = pd.DataFrame(st.session_state.bills)
 
-    # Calculate summary totals
+
+ #The code that will calculate summary totals
     total_paid = df["Amount Paid"].sum()
     total_due = df["Amount Due"].sum()
     total_billed = df["Total Amount"].sum()
+
 
     # Display metrics
     col1, col2, col3 = st.columns(3)
@@ -201,16 +237,19 @@ if st.session_state.bills:
     col3.metric("📈 Total Billed", f"${total_billed:,.2f}")
     st.subheader("📋 Bill List")
 
-    # Define the column widths for the table
+
+#The column widths for the table, instead of a normal dataframe so we can add the delete button
     col_widths = [2, 2, 2, 2, 2, 2, 1]
 
-    # Render the header row
+
+#Gives the title for the rows
     header_cols = st.columns(col_widths)
-    headers = ["Name", "Type", "Service", "Bill Date", "Amount Due", "Deadline"]
+    headers = ["Name", "Type", "Service", "Bill Date", "Amount Due", "Deadline", ""]
     for col, header in zip(header_cols, headers):
         col.markdown(f"**{header}**")
 
-    # Render each row with a delete button
+
+#This loop allows us to put a delete button on the side of each bill
     for idx, bill in enumerate(st.session_state.bills):
         row_cols = st.columns(col_widths)
         row_cols[0].write(bill["Name"])
@@ -219,23 +258,24 @@ if st.session_state.bills:
         row_cols[3].write(str(bill["Bill Date"]))
         row_cols[4].write(f"${bill['Amount Due']:,.2f}")
         row_cols[5].write(str(bill["Deadline"]))
-    
-    
-        if row_cols[6].button("🗑️", key=f"delete_{idx}"):
+
+        #Deletes the bill data at the exact row next to the delete clicked
+        if row_cols[6].button("🗑", key=f"delete_{idx}"):
             st.session_state.bills.pop(idx)
-            st.success("☑ Bill deleted successfully!")
-            st.toast("☑ Bill deleted successfully!")
-            st.rerun()
-
-            
 
 
-    #Deadline Notifications
+           
+
+
+
+
+ #The line of code that will display the Deadline Notifications 
     st.subheader("⚠🚨 Upcoming Deadlines")
     today = datetime.date.today()
     deadline_limit = today + datetime.timedelta(days=3)
 
 
+#The condition it has to follow to display the upcoming deadlines
     upcoming_df = df[
         (df["Deadline"] >= today) &
         (df["Deadline"] <= deadline_limit) &
@@ -243,22 +283,14 @@ if st.session_state.bills:
     ]
 
 
+
+
     if not upcoming_df.empty:
         for i, row in upcoming_df.iterrows():
             st.warning(f"🔔 Payment for **{row['Name']}** is due on **{row['Deadline']}**. Amount Due: **${row['Amount Due']:,.2f}**")
     else:
         st.info("✅ No upcoming deadlines in the next 3 days.")
+#Aaron Greene’s Work ദ്ദി ˉ͈̀꒳ˉ͈́ )✧
 
-st.markdown(
-    f"""
-    <style>
-    .bill_form{{
-    background-color: #000000;
-    border: 2px, #FFFFFF;
-    border-radius: 4px;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
 
