@@ -2,11 +2,38 @@ import streamlit as st
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
+import base64
 
 load_dotenv()
 supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(supabase_url, supabase_key)
+
+#Background Image
+#Load and encode the image
+image_path = "buck_account_wallpaper.jpg"
+
+with open(image_path, "rb") as image_file:
+    encoded_image = base64.b64encode(image_file.read()).decode()
+
+# Use st.markdown to set the background image via CSS
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{encoded_image}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        position: relative;
+        min-height: 100vh;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 def sign_up(email, password, username):
     try:
