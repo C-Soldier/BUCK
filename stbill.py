@@ -1,7 +1,12 @@
+# To import the streamlit module to use streamlit
 import streamlit as st
+# To import the billtracker class
 from billtracker import Bill_Type as bt
+# To import the datetime module
 import datetime
+# To import the pandas module for table
 import pandas as pd
+# To import the base64 module for streamlit user interface
 import base64
 
 # --- APP CUSTOMIZATION SECTION ---
@@ -292,7 +297,6 @@ if st.session_state.bills:
     else:
         st.info("✅ No upcoming deadlines in the next 3 days.")
 #Aaron Greene’s Work ദ്ദി ˉ͈̀꒳ˉ͈́ )✧
-
 
 
 
