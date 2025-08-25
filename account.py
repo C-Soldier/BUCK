@@ -11,7 +11,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 #Background Image
 #Load and encode the image
-image_path = "buck_account_wallpaper.jpg"
+image_path = "settings_wallpaper.jpg"
 
 with open(image_path, "rb") as image_file:
     encoded_image = base64.b64encode(image_file.read()).decode()
