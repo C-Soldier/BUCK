@@ -15,6 +15,13 @@ BillTracker = st.Page(
     title="📜📌Bill & Subscription Tracker",
 )
 
+# Customize Buck page
+Buck_Settings =  st.Page(
+    page="buck_customization.py",
+    title="Customize Buck",
+    icon="⚙"
+)
+
 #The Account Settings Page
 Account = st.Page(
     page="account.py",
@@ -25,5 +32,5 @@ Account = st.Page(
 #Logo
 st.logo("buck_logo.png", size="large")
 
-pg = st.navigation([Chatbot, BillTracker, Account], position='top')
+pg = st.navigation([Chatbot, BillTracker, Buck_Settings, Account], position='top')
 pg.run()
