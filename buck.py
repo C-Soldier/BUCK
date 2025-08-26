@@ -1,10 +1,6 @@
 # Importing the necessary libraries
 # The LLM we'll be using
 import google.generativeai as genai
-# To be able to load the API key from the '.env' file
-from dotenv import load_dotenv as lenv
-# To be able to load the API key from the '.env' file
-import os
 # To be able to use streamlit
 import streamlit as st
 # For customization for the chatbot's prompt tuning
@@ -126,8 +122,8 @@ st.set_page_config(
     layout="centered"
 )
 
-lenv()  # To load the api variable from .env file
-secret_key = st.secrets['CHAT_API'] #A assign the api from streamlit secrets to a variable
+#A assign the api from streamlit secrets to a variable
+secret_key = st.secrets['CHAT_API']
 
 try:
     # Configurethe the generative model 
