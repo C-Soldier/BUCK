@@ -127,7 +127,7 @@ st.set_page_config(
 )
 
 lenv()  # To load the api variable from .env file
-secret_key = st.secrets("CHAT_API") #A assign the api to a variable
+secret_key = st.Secrets("CHAT_API") #A assign the api to a variable
 
 try:
     # Configurethe the generative model 
