@@ -101,4 +101,4 @@ if st.session_state.user_email:
 else: # Otherwise, the Authentication screen is shown
     auth_screen()
 
-# This ensures a seamless experience where users only see the appropriate screen based on their authentication status.
+# This ensures a smooth experience where users only see the appropriate screen based on their authentication status.
