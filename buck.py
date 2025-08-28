@@ -7,10 +7,18 @@ from dotenv import load_dotenv as lenv
 import os
 # To be able to use streamlit
 import streamlit as st
+
 # For customization for the chatbot's prompt tuning
 import json
 # For customization of using the st.markdown
 import base64
+
+# To be able to display dataframes from excel files
+import pandas as pd
+# To be able to read pdf files
+from PyPDF2 import PdfReader
+# To be able to split the pdf text into chunks
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # --- APP CUSTOMIZATION SECTION ---
 # App titles
@@ -181,9 +189,60 @@ if 'assistant_avatar' not in st.session_state:
 text = ''
 
 # Functions
+# This function is used to display file uploaded by the user in the chat
+def display(file_input):
+    try:
+        # If the user uploads an image
+        if "image" in file_input.type:
+            st.chat_message("user", avatar=st.session_state.user_avatar).image(file_input)
+        # If the user uploads an excel file
+        elif file_input.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            df = pd.read_excel(file_input)
+            st.chat_message("user", avatar=st.session_state.user_avatar).dataframe(df)
+        # If the user uploads a pdf file
+        elif "pdf" in file_input.type:
+            base64_pdf = base64.b64encode(file_input.read()).decode('utf-8')
+            pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
+            st.chat_message("user", avatar=st.session_state.user_avatar).markdown(pdf_display, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Error displaying file: {e}")
+
+# This function is used to read the pdf file and split it into chunks for the chatbot
+def read_pdf(pdf_input):
+    try:
+        pdf_text = ""
+        for pdf in pdf_input:
+            pdf_reader = PdfReader(pdf)
+            for page in pdf_reader.pages:
+                pdf_text += page.extract_text()
+        
+        # To split the pdf text into chunks of data
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        chunks = text_splitter.split_text(pdf_text)
+        # To join the chunks into a single string
+        pdf_text = "\n".join(chunks)
+        return pdf_text     
+    except Exception as e:
+        st.error(f"Error reading PDF: {e}")
+
+# This function is used to read the excel file and split it into chunks for the chatbot
+def read_excel(excel_input):
+    try:
+        df = pd.read_excel(excel_input)
+        excel_data = df.to_string(index=False)
+        # To split the excel text into chunks of data
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        chunks = text_splitter.split_text(excel_data)
+        # To join the chunks into a single string
+        excel_text = "\n".join(chunks)
+        return excel_text
+    except Exception as e:
+        st.error(f"Error reading Excel file: {e}")
+        return None
+
 # This function is created to be ablt to talk to the chatbot
 def askGemini(prompt, chat_session):
-    try:
+    try:   
         response = chat_session.send_message(prompt)
         json_string = response.text
         start = json_string.find("{")
@@ -194,14 +253,13 @@ def askGemini(prompt, chat_session):
         return reply
     except Exception as e:
         st.error(f"Error generating response: {e}")
-        st.stop()
         return None
 
-# THis function is used to send images to the chabot
-def showGemini(image_data, chat_session):
+# This function is used to send files to the chabot
+def showGemini(file_input, chat_session):
     try:
-        image = {'mime_type': 'image/jpeg', 'data': image_data}
-        response = chat_session.send_message(image)
+        file_data = {'mime_type': 'image/jpeg', 'data': file_input}
+        response = chat_session.send_message(file_data)
         json_string = response.text
         start = json_string.find("{")
         end = json_string.find("}") + 1
@@ -210,14 +268,14 @@ def showGemini(image_data, chat_session):
         reply = json_data.get("response", "No response found")
         return reply
     except Exception as e:
-        st.error(f"Error processing image: {e}")
+        st.error(f"Error processing file: {e}")
         st.stop()
         return None
 
-#This function is a of the function 'askGemeini' and 'showGemini'
-def chatGemini(prompt, image_data, chat_session):
+#This function is a combination of the function 'askGemeini' and 'showGemini'
+def chatGemini(prompt, file_input, chat_session):
     try:
-        image = {'mime_type': 'image/jpeg', 'data': image_data}
+        image = {'mime_type': 'image/jpeg', 'data': file_input}
         response = chat_session.send_message([image, prompt])
         json_string = response.text
         start = json_string.find("{")
@@ -228,7 +286,6 @@ def chatGemini(prompt, image_data, chat_session):
         return reply
     except Exception as e:
         st.error(f"Error with response: {e}")
-        st.stop()
         return None
 
 # If the user wishes to delete any of the conversations as their choosing
@@ -307,7 +364,7 @@ for chat in st.session_state.chats:
 # Input area for the user to type their message or upload a file for the chatbot
 prompt = st.chat_input("Now, Let's Talk Finance 🤑",
 accept_file=True,  # Allow file uploads
-file_type=["jpg", "jpeg", "png", "webp", "gif"]#To specify which file types are accepted
+file_type=["jpg", "jpeg", "png", "webp", "gif", "xlsx", "pdf"]#To specify which file types are accepted
 )
 
 # To send the text file of the chatbot's persona to prompt tune the chabot
@@ -321,15 +378,23 @@ except Exception as e:
 askGemini(text, st.session_state.chat_session)
 
 if prompt and prompt.text and prompt["files"]:
-    # To display the messages from the user in the Streamlit app
-    st.chat_message("user", avatar=st.session_state.user_avatar).image(prompt["files"][0])
+    # To display the inputs from the user in the Streamlit app
+    display(prompt["files"][0])
     st.chat_message("user", avatar=st.session_state.user_avatar).markdown(prompt.text)
     
     # To store each of the messages
     st.session_state.chats.append({'role': 'user', 'content': prompt["files"][0]})
     st.session_state.chats.append({'role': 'user', 'content': prompt.text})
     
-    chat = chatGemini(prompt.text, prompt["files"][0].read(), st.session_state.chat_session)
+    # If the file is a pdf, we need to read it and split it into chunks
+    if prompt["files"][0].type == "application/pdf":
+        chat = askGemini([read_pdf(prompt["files"]), prompt.text], st.session_state.chat_session)
+        
+    elif prompt["files"][0].type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        chat = askGemini([read_excel(prompt["files"][0]), prompt.text], st.session_state.chat_session)
+    else:
+        # If the file is an image, it is sent directly to the chatbot
+        chat = chatGemini(prompt.text, prompt["files"][0].read(), st.session_state.chat_session)
 
     # Display the response from the chatbot about the image
     st.chat_message("assistant", avatar=st.session_state.assistant_avatar).markdown(chat)
@@ -355,14 +420,22 @@ elif prompt and prompt.text:
 
 # If the user has uploaded an image file, process it
 elif prompt and prompt["files"]:
-    # To display the image uploaded by the user
-    st.chat_message("user", avatar=st.session_state.user_avatar).image(prompt["files"][0])
-    
+    # To display the file uploaded by the user
+    display(prompt["files"][0])
+        
     # To store each of the messages
     st.session_state.chats.append({'role': 'user', 'content': prompt["files"][0]})
     
-    # send the image data to the chatmodel
-    chat = showGemini(prompt["files"][0].read(), st.session_state.chat_session)
+    # send the file to the chatmodel
+    # If the file is an image, it is sent directly to the chatbot
+    if prompt["files"][0].type == "application/pdf":
+        chat = askGemini(read_pdf(prompt["files"]), st.session_state.chat_session)
+        
+    elif prompt["files"][0].type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        chat = askGemini(read_excel(prompt["files"][0]), st.session_state.chat_session)
+    else:
+        # If the file is an image, we can send it directly to the chatbot
+        chat = showGemini(prompt["files"][0].read(), st.session_state.chat_session)
     
     # Display the response from the chatbot about the image
     st.chat_message("assistant", avatar=st.session_state.assistant_avatar).markdown(chat)
