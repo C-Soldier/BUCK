@@ -88,7 +88,7 @@ def auth_screen():
     if option == "Sign Up" and st.button("Register"): 
         user = sign_up(email, password, username=user)
         if user and user.user:
-            st.success("Registration successful. Please log in.")
+            st.success("Registration successful. You will receive an email, afterwards log in.")
 
     # If the user chooses 'Login' and clicks the 'Login' button instead, the Sign In function will be executed
     if option == "Login" and st.button("Login"):
