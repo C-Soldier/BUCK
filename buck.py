@@ -25,7 +25,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 st.markdown("""
     <h1 style= 
     'text-align: center;'
-    color: #90C383;
+    color: #008000;
     ><strong><i>💸BUCK💸</i></strong></h1>
             
     <style>
