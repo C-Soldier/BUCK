@@ -5,10 +5,17 @@ import streamlit as st
 from supabase import create_client, Client
 # For cutomization using the st.markdown
 import base64
+from dotenv import load_dotenv
+# To be able to access environment variables
+import os
+# To be able to use the main chatbot functions
+import buck
 
+# Load environment variables from a .env file
+load_dotenv()
 # Retrieving a Supabase URL and Supabase Key to create a Client
-supabase_url = st.secrets["supa"]["SUPABASE_URL"]
-supabase_key = st.secrets["supa"]["SUPABASE_KEY"]
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(supabase_url, supabase_key)
 
 # ---Background Image---
@@ -89,6 +96,7 @@ def auth_screen():
         if user and user.user:
             st.session_state.user_email = user.user.email  # Upon successful login, the user's email is stored in the st.session_state
             st.success(f"Welcome back, {email}!") # A welcome message displays
+            buck.askGemini("LOGGED IN STOP TALK")
             st.rerun() # And the chatbot will rerun once again to update the interface
 
 # This is to check is the user email exists in the st.session_state
