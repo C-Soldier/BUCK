@@ -8,10 +8,8 @@ import datetime
 import pandas as pd
 # To import the base64 module for streamlit user interface
 import base64
-
 # To be able to split the pdf text into chunks
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-
 # To import the buck file to send the bill data to the chatbot
 import buck
 
@@ -108,7 +106,7 @@ st.markdown(
 
         /* General text */
         .stMarkdown, .stText {
-            color: #e7ffe7;
+            color: #76ca76;
             position: relative;
             z-index: 20;
         }
@@ -322,6 +320,7 @@ if st.session_state.bills:
             st.success("✅ Bills sent to Buck successfully!")
         except Exception as e:
             st.error(f"Error sending bills to Buck: {e}")
+
 
 
 
