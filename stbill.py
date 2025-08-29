@@ -99,7 +99,7 @@ st.markdown(
 
         /* Headings */
         h1, h2, h3, h4, h5, h6 {
-            color: #76ca76;
+            color: #e7ffe7;
             position: relative;
             z-index: 20;
         }
@@ -320,6 +320,7 @@ if st.session_state.bills:
             st.success("✅ Bills sent to Buck successfully!")
         except Exception as e:
             st.error(f"Error sending bills to Buck: {e}")
+
 
 
 
