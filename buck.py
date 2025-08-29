@@ -422,7 +422,7 @@ elif prompt and prompt.text:
     chat = askGemini(prompt.text, st.session_state.chat_session)
     
     # Show chatbot responses
-    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(f**{chat}**)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})
@@ -448,7 +448,7 @@ elif prompt and prompt["files"]:
         chat = showImageGemini(prompt["files"][0].read(), st.session_state.chat_session)
     
     # Display the response from the chatbot about the image
-    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(f**{chat}**)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})
