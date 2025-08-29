@@ -174,7 +174,7 @@ def user_avatars():
                         st.rerun()
 
     # To add an avatar to the list
-    input_emoji = st.text_input("*", placeholder="Emojis Only e.g., 😀")
+    input_emoji = st.text_input("**Add An Avatar**", placeholder="Emojis Only e.g., 😀")
     if input_emoji: 
         # To check to see if it's an emoji the user entered
         if not emoji.is_emoji(input_emoji):
@@ -206,7 +206,7 @@ def add_buck_avatar():
                         st.rerun()
     
     # To add an avatar to the list
-    input_emoji = st.text_input("Add An Avatar", placeholder="Emojis Only e.g., 😀")
+    input_emoji = st.text_input("**Add An Avatar**", placeholder="Emojis Only e.g., 😀")
     if input_emoji: 
         # To check to see if it's an emoji theuse r entered
         if not emoji.is_emoji(input_emoji):
@@ -218,8 +218,6 @@ def add_buck_avatar():
         else:
             st.session_state.buck_avatars_list.append(input_emoji)
 
-    st.divider()
-    
 # To let the user choose the chatbot's personality
 st.markdown("## Buck's Personality")
 tone = st.radio("", ["Casual😄", "Professional💼"], index=st.session_state.persona_index)
