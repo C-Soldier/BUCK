@@ -1,7 +1,12 @@
+# This is the customization page for the app
+# It allows the user to customize the chatbot's persona and avatars for both the user and the chatbot
+# Importing the necessary libraries
+# Import the streamlit module
 import streamlit as st
+# Import the genai llm
 import google.generativeai as genai
+# Import base64 for customization of app
 import base64
-
 # To import the emojis library
 import emoji
 
@@ -10,7 +15,7 @@ import emoji
 st.markdown("""
     <h1 style=
     color: #90C383;
-    ><strong><i>⚙Customize Buck</i></strong></h1>
+    ><strong><i>⚙ Customize Buck</i></strong></h1>
             
     <style>
     position: sticky;
@@ -30,6 +35,7 @@ with open(image_path, "rb") as image_file:
 st.markdown(
     f"""
     <style>
+    
     .stApp {{
         background-image: url("data:image/jpg;base64,{encoded_image}");
         background-size: cover;
@@ -104,7 +110,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# The variable are here too, so when the user decides to change the chatbot's persona, the 'model' will change as well
+# The variable is here too, so when the user decides to change the chatbot's persona, the 'model' will change as well. This is to reduce token from the chatbot 
 casual_model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"}) #Using Gemini 2.5 Flash model
 professional_model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"}) #Using Gemini 2.5 Flash model
 
@@ -113,11 +119,9 @@ professional_model = genai.GenerativeModel('gemini-2.5-flash', generation_config
 if 'persona' not in st.session_state:
     st.session_state.peronsa = 'casual.txt'
 
-# To initialze the index parameter for the radio in the session state
-if 'index' not in st.session_state:
-    st.session_state.index = {'index1': 0,
-                              'index2': 0,
-                              'index3': 0}
+# To initialze the index parameter for the radio to change the chatbot's personality in the session state
+if 'persona_index' not in st.session_state:
+    st.session_state.persona_index = 0
     
 # session state initialization for the chatbot
 if "chat_session" not in st.session_state:
@@ -125,83 +129,127 @@ if "chat_session" not in st.session_state:
 
 # To initialize a 'default' avatar varible in the session state
 if 'user_avatar' not in st.session_state:
-    st.session_state.user_avatar = ""
+    st.session_state.user_avatar = "😀"
 
 # To initialize a list user avatars varible in the session state
 if 'user_avatars_list' not in st.session_state:
-    st.session_state.user_avatars_list = ["😀", "🤑", "💸", "💲"]
+    st.session_state.user_avatars_list = ["😀", "🤓", 
+                                          "😂", "🥰", 
+                                          "🤔", "🤩", 
+                                          "😮", "🤫", 
+                                          "😴", "😔", 
+                                          "😠", "🥳", 
+                                          "😎", "🤑"]
 
 # To initialize a 'default' chatbot avatar varible in the session state
-if 'assistant_avatar' not in st.session_state:
-    st.session_state.assistant_avatar = ""
+if 'buck_avatar' not in st.session_state:
+    st.session_state.buck_avatar = "🤖"
 
 # To initialize a list chatbot avatars varible in the session state
-if 'assistant_avatars_list' not in st.session_state:
-    st.session_state.assistant_avatars_list = ["🤖", "👾", "💸", "💲"]
+if 'buck_avatars_list' not in st.session_state:
+    st.session_state.buck_avatars_list = ["🤖", "👾",
+                                          "💰", "🏦",
+                                          "💵", "💸", 
+                                          "💲"]
 
 # Functions
 # This function is if the user wishes to add more icons for the user
-@st.dialog("Add Your Cutom Avatar")
-def add_user_avatar():
+@st.dialog("Choose Your Avatar")
+def user_avatars():
+    st.markdown(f"## Your Current Avatar: {st.session_state.user_avatar}")
+    # To organize the avatars in the middle of the screen
+    col1, col2, col3 = st.columns([1, 7, 1])
+    # To let the user choose which icon they want
+    with col2.container(border=False, height=180):
+        # To let the user choose which icon they want
+        for user_avatar in range(0, len(st.session_state.user_avatars_list), 4):
+            # To organize the avatars in rows of 4
+            col_avatars = st.columns(4)
+            # To display the avatars in rows of 4
+            for i, user_avatar in enumerate(st.session_state.user_avatars_list[user_avatar:user_avatar+4]): # Loop through a slice of 4 avatars
+                with col_avatars[i]:
+                    # If the user clicks on the avatar, it will be set as their avatar
+                    if st.button(user_avatar):
+                        st.session_state.user_avatar = user_avatar
+                        st.rerun()
+
+    # To add an avatar to the list
     input_emoji = st.text_input("*", placeholder="Emojis Only e.g., 😀")
     if input_emoji: 
-        # To check to see if it's an emoji theuse r entered
-        for char in input_emoji:
-            if not emoji.is_emoji(char):
-                st.error("Invalid Avatar. Emojis Only e.g., 😀")
-            else:
-                st.session_state.user_avatars_list.append(input_emoji) 
-                st.rerun()
+        # To check to see if it's an emoji the user entered
+        if not emoji.is_emoji(input_emoji):
+            st.error("Invalid Avatar. Emojis Only e.g., 😀")
+        # To check if the avatar already exists
+        elif input_emoji in st.session_state.user_avatars_list:
+            st.error("Avatar already exists. Please enter a different one.")
+        # To add the avatar if it passes the checks
+        else:
+            st.session_state.user_avatars_list.append(input_emoji)
 
 # This function is if the user wishes to add more icons for the chatbot
-@st.dialog("Add Your Cutom Avatar")
-def add_assistant_avatar():
-    input_emoji = st.text_input("*", placeholder="Emojis Only e.g., 😀")
+@st.dialog("Add Your Avatar")
+def add_buck_avatar():
+    st.markdown(f"## Buck's Current Avatar: {st.session_state.buck_avatar}")
+    col1, col2, col3 = st.columns([1, 7, 1])
+    # To let the user choose which icon they want
+    with col2.container(border=False, height=180):
+        # To let the user choose which icon they want
+        for buck_avatar in range(0, len(st.session_state.buck_avatars_list), 4):
+            # To organize the avatars in rows of 4
+            col_avatars = st.columns(4)
+            # To display the avatars in rows of 4
+            for i, buck_avatar in enumerate(st.session_state.buck_avatars_list[buck_avatar:buck_avatar+4]): # Loop through a slice of 4 avatars
+                with col_avatars[i]:
+                    # If the user clicks on the avatar, it will be set as their avatar
+                    if st.button(buck_avatar):
+                        st.session_state.buck_avatar = buck_avatar
+                        st.rerun()
+    
+    # To add an avatar to the list
+    input_emoji = st.text_input("Add An Avatar", placeholder="Emojis Only e.g., 😀")
     if input_emoji: 
         # To check to see if it's an emoji theuse r entered
-        for char in input_emoji:
-            if not emoji.is_emoji(char):
-                st.error("Invalid Avatar. Emojis Only e.g., 😀")
-            else:
-                st.session_state.assistant_avatars_list.append(input_emoji) 
-                st.rerun()
+        if not emoji.is_emoji(input_emoji):
+            st.error("Invalid Avatar. Emojis Only e.g., 😀")
+        # To check if the avatar already exists
+        elif input_emoji in st.session_state.buck_avatars_list:
+            st.error("Avatar already exists. Please enter a different one.")
+        # To add the avatar if it passes the checks
+        else:
+            st.session_state.buck_avatars_list.append(input_emoji)
 
+    st.divider()
+    
 # To let the user choose the chatbot's personality
-tone = st.radio("Customize Buck's Personality", ["Casual😄", "Professional💼"], index=st.session_state.index['index1'])
+st.markdown("## Buck's Personality")
+tone = st.radio("", ["Casual😄", "Professional💼"], index=st.session_state.persona_index)
+# Depending on what the user chooses, the chatbot's persona and model will change
 if tone == "Casual😄":
     st.session_state.persona = 'casual.txt'
     st.session_state.chat_session = casual_model.start_chat(history=[])
-    st.session_state.index['index1'] = 0
+    st.session_state.persona_index = 0
 else:
     st.session_state.persona = 'professional.txt'
     st.session_state.chat_session = professional_model.start_chat(history=[])
-    st.session_state.index['index1'] = 1
+    st.session_state.persona_index = 1
 
 # To divide the different sections of the page
 st.divider()
 
+st.markdown("## Avatars")
 # These variables are for orgainization of the settings
 col1, col2 = st.columns(2)
 # To let the user choose which icon they want
 with col1.container():
-    user_avatar = st.radio("Choose your user avatar", st.session_state.user_avatars_list, index=st.session_state.index['index2'])
-    if user_avatar:
-        st.session_state.user_avatar = user_avatar
-        # To set the index for the radio function
-        st.session_state.index['index2'] = st.session_state.user_avatars_list.index(st.session_state.user_avatar)
+    st.markdown(f"##### Your Current Avatar: {st.session_state.user_avatar}")
     
     # To invoke the user_add_avatar function
-    if st.button("Add User Avatar"):
-        add_user_avatar()
+    if st.button("Change Your Avatar"):
+        user_avatars()
     
 with col2.container():
-    # To let the user choose which icon they want for Buck
-    assistant_avatar = st.radio("Choose Buck's avatar", st.session_state.assistant_avatars_list, index=st.session_state.index['index3'])
-    if assistant_avatar:
-        st.session_state.assistant_avatar = assistant_avatar
-        # To set the index for the radio function
-        st.session_state.index['index3'] = st.session_state.assistant_avatars_list.index(st.session_state.assistant_avatar)
+    st.markdown(f"##### Buck's Current Avatar: {st.session_state.buck_avatar}")
 
     # To invoke the user_add_avatar function
-    if st.button("Add Buck Avatar"):
-        add_assistant_avatar()
+    if st.button("Change Buck's Avatar"):
+        add_buck_avatar()
