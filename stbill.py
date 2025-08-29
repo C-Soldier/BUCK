@@ -224,7 +224,7 @@ if submitted:
 
 
 #The button to add new bills
-st.button("Make New Bill", on_click=clear_inputs)
+st.button("**Make New Bill**", on_click=clear_inputs)
 # Display Summary
 if st.session_state.bills:
     st.subheader("📊 Payment Overview")
@@ -302,7 +302,7 @@ if st.session_state.bills:
         st.info("✅ No upcoming deadlines in the next 3 days.")
 #Aaron Greene’s Work ദ്ദി ˉ͈̀꒳ˉ͈́ )✧
 
-    if st.button("Send Bills To Buck"):
+    if st.button("**Send Bills To Buck**"):
         try:
             bill_data = df.to_string(index=False)
             # To split the excel text into chunks of data
@@ -320,6 +320,7 @@ if st.session_state.bills:
             st.success("✅ Bills sent to Buck successfully!")
         except Exception as e:
             st.error(f"Error sending bills to Buck: {e}")
+
 
 
 
