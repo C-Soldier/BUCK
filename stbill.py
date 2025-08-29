@@ -9,6 +9,12 @@ import pandas as pd
 # To import the base64 module for streamlit user interface
 import base64
 
+# To be able to split the pdf text into chunks
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+# To import the buck file to send the bill data to the chatbot
+import buck
+
 # --- APP CUSTOMIZATION SECTION ---
 # App titles
 st.markdown("""
@@ -298,9 +304,24 @@ if st.session_state.bills:
         st.info("✅ No upcoming deadlines in the next 3 days.")
 #Aaron Greene’s Work ദ്ദി ˉ͈̀꒳ˉ͈́ )✧
 
-
-
-
+    if st.button("Send Bills To Buck"):
+        try:
+            bill_data = df.to_string(index=False)
+            # To split the excel text into chunks of data
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            chunks = text_splitter.split_text(bill_data)
+            # To join the chunks into a single string
+            text = "\n".join(chunks)
+            st.session_state.chats.append({'role': 'user', 'content': text})
+            # To call the buck.py file and send the data to the chatbot
+            chat = buck.askGemini(text, st.session_state.chat_session)
+            # Display the response from the chatbot about the image
+            st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
+            # To store the chatbot responses in the session state
+            st.session_state.chats.append({'role': 'assistant', 'content': chat}) 
+            st.success("✅ Bills sent to Buck successfully!")
+        except Exception as e:
+            st.error(f"Error sending bills to Buck: {e}")
 
 
 
