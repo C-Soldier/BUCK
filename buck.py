@@ -97,7 +97,7 @@ st.markdown(
         /* --- BUTTONS --- */
         div.stButton > button {
             background-color: #191B18 ;
-            color: #f0fff0 ;
+            color: #008000 ;
             font-weight: bold;
             border-radius: 8px;
             border: 1px solid #FFFFFF ;
