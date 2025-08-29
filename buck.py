@@ -138,7 +138,7 @@ lenv()  # To load the api variable from .env file
 secret_key = os.getenv("CHAT_API") #A assign the api to a variable
 
 try:
-    # Configurethe the generative model 
+    # Configure the generative model 
     genai.configure(api_key=secret_key)
 except Exception as e:
     # If failed to find api, the app will stop
@@ -147,8 +147,8 @@ except Exception as e:
 
 # Configure/set up the generative model
 # There are two differnet variables for the model to minimize the tokens used for the chatbot
-casual_model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"}) #Using Gemini 2.5 Flash model
-professional_model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"}) #Using Gemini 2.5 Flash model
+casual_model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"}) # Using Gemini 2.5 Flash model
+professional_model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"}) # Using Gemini 2.5 Flash model
 
 # session state initialization for the chatbot
 if "chat_session" not in st.session_state:
@@ -181,8 +181,8 @@ if 'user_avatar' not in st.session_state:
     st.session_state.user_avatar = "😀"
 
 # To initialize a 'default' chatbot avatar varible in the session state
-if 'assistant_avatar' not in st.session_state:
-    st.session_state.assistant_avatar = "🤖"
+if 'buck_avatar' not in st.session_state:
+    st.session_state.buck_avatar = "🤖"
 
 # Other variables for the chatbot's functions
 # To create a global text variable
@@ -211,8 +211,10 @@ def display(file_input):
 def read_pdf(pdf_input):
     try:
         pdf_text = ""
+        # To read the pdf file
         for pdf in pdf_input:
             pdf_reader = PdfReader(pdf)
+            # To extract the text from each page of the pdf
             for page in pdf_reader.pages:
                 pdf_text += page.extract_text()
         
@@ -228,7 +230,10 @@ def read_pdf(pdf_input):
 # This function is used to read the excel file and split it into chunks for the chatbot
 def read_excel(excel_input):
     try:
-        df = pd.read_excel(excel_input)
+        # To read the excel file
+        for sheet_name in pd.ExcelFile(excel_input).sheet_names:
+            df = pd.read_excel(excel_input, sheet_name=sheet_name)
+        # To convert the dataframe to a string
         excel_data = df.to_string(index=False)
         # To split the excel text into chunks of data
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -242,7 +247,8 @@ def read_excel(excel_input):
 
 # This function is created to be ablt to talk to the chatbot
 def askGemini(prompt, chat_session):
-    try:   
+    try:
+        # Send the prompt to the chat model
         response = chat_session.send_message(prompt)
         json_string = response.text
         start = json_string.find("{")
@@ -255,11 +261,12 @@ def askGemini(prompt, chat_session):
         st.error(f"Error generating response: {e}")
         return None
 
-# This function is used to send files to the chabot
-def showGemini(file_input, chat_session):
+# This function is used to send images to the chabot
+def showImageGemini(image_input, chat_session):
     try:
-        file_data = {'mime_type': 'image/jpeg', 'data': file_input}
-        response = chat_session.send_message(file_data)
+        # To send the image from the user to the chat model
+        image_data = {'mime_type': 'image/jpeg', 'data': image_input}
+        response = chat_session.send_message(image_data)
         json_string = response.text
         start = json_string.find("{")
         end = json_string.find("}") + 1
@@ -273,10 +280,11 @@ def showGemini(file_input, chat_session):
         return None
 
 #This function is a combination of the function 'askGemeini' and 'showGemini'
-def chatGemini(prompt, file_input, chat_session):
+def chatImageGemini(prompt, image_input, chat_session):
     try:
-        image = {'mime_type': 'image/jpeg', 'data': file_input}
-        response = chat_session.send_message([image, prompt])
+        # To send the image from the user to the chat model along with the prompt
+        image_data = {'mime_type': 'image/jpeg', 'data': image_input}
+        response = chat_session.send_message([image_data, prompt])
         json_string = response.text
         start = json_string.find("{")
         end = json_string.find("}") + 1
@@ -357,7 +365,7 @@ with st.sidebar:
 
 for chat in st.session_state.chats:
     # Avatar customizations from the session state
-    avatar = chat.get("avatar", st.session_state.assistant_avatar if chat.get('role') == 'assistant' else st.session_state.user_avatar)
+    avatar = chat.get("avatar", st.session_state.buck_avatar if chat.get('role') == 'assistant' else st.session_state.user_avatar)
     # Display all the historical messages
     st.chat_message(chat['role'], avatar=avatar).markdown(chat['content'])
 
@@ -389,15 +397,16 @@ if prompt and prompt.text and prompt["files"]:
     # If the file is a pdf, we need to read it and split it into chunks
     if prompt["files"][0].type == "application/pdf":
         chat = askGemini([read_pdf(prompt["files"]), prompt.text], st.session_state.chat_session)
-        
+    # If the file is an excel file, we need to read it and split it into chunks
     elif prompt["files"][0].type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         chat = askGemini([read_excel(prompt["files"][0]), prompt.text], st.session_state.chat_session)
+    # If the file is an image, we can send it directly to the chatbot
     else:
         # If the file is an image, it is sent directly to the chatbot
-        chat = chatGemini(prompt.text, prompt["files"][0].read(), st.session_state.chat_session)
+        chat = chatImageGemini(prompt.text, prompt["files"][0].read(), st.session_state.chat_session)
 
     # Display the response from the chatbot about the image
-    st.chat_message("assistant", avatar=st.session_state.assistant_avatar).markdown(chat)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})    
@@ -413,7 +422,7 @@ elif prompt and prompt.text:
     chat = askGemini(prompt.text, st.session_state.chat_session)
     
     # Show chatbot responses
-    st.chat_message("assistant", avatar=st.session_state.assistant_avatar).markdown(chat)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})
@@ -427,18 +436,19 @@ elif prompt and prompt["files"]:
     st.session_state.chats.append({'role': 'user', 'content': prompt["files"][0]})
     
     # send the file to the chatmodel
-    # If the file is an image, it is sent directly to the chatbot
+    # If the file is a pdf
     if prompt["files"][0].type == "application/pdf":
         chat = askGemini(read_pdf(prompt["files"]), st.session_state.chat_session)
-        
+    # If the file is an excel file
     elif prompt["files"][0].type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         chat = askGemini(read_excel(prompt["files"][0]), st.session_state.chat_session)
+    # If the file is an image file
     else:
         # If the file is an image, we can send it directly to the chatbot
-        chat = showGemini(prompt["files"][0].read(), st.session_state.chat_session)
+        chat = showImageGemini(prompt["files"][0].read(), st.session_state.chat_session)
     
     # Display the response from the chatbot about the image
-    st.chat_message("assistant", avatar=st.session_state.assistant_avatar).markdown(chat)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})
