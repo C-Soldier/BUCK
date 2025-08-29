@@ -241,7 +241,7 @@ if st.session_state.bills:
 
     # Display metrics
     col1, col2, col3 = st.columns(3)
-    col1.metric("**💰 Paid So Far**", f"${total_paid:,.2f}")
+    col1.metric("💰 Paid So Far", f"${total_paid:,.2f}")
     col2.metric("🧾 Still Due", f"${total_due:,.2f}")
     col3.metric("📈 Total Billed", f"${total_billed:,.2f}")
     st.subheader("📋 Bill List")
