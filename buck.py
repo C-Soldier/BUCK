@@ -337,7 +337,7 @@ with st.sidebar:
 
     # To display each conversation made between the user and the chatbot
     with st.container():
-        "Recent Money Talks💰:"
+        "**Recent Money Talks💰:**"
         for key, value in st.session_state.recentChats.items():
             if st.button(key, width=220):
                 st.session_state.chats = value
