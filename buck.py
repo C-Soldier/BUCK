@@ -118,7 +118,7 @@ st.markdown(
 
         /* General text */
         .stMarkdown, .stText {
-            color: #008000;
+            color: #76ca76;
             position: relative;
             z-index: 20;
         }
