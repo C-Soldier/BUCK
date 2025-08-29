@@ -316,11 +316,11 @@ def delete():
 with st.sidebar:
     # To show the user which conversation they are currently in
     if len(st.session_state.recentChats) == 0:
-        st.write("Current Talk: - -")
+        st.markdown("**Current Talk: - -**")
     else:
         for key, value in st.session_state.recentChats.items():
             if st.session_state.chats == value:
-                st.write(f"Current Talk: {key}")
+                st.markdown(f"**Current Talk: {key}**")
     
     # To start a new conversation with the chatbot
     if st.button("💲New Money Talk", width=220):
