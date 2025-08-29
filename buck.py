@@ -25,7 +25,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 st.markdown("""
     <h1 style= 
     'text-align: center;'
-    'color: #008000;'
+    color: #90C383;
     ><strong><i>💸BUCK💸</i></strong></h1>
             
     <style>
@@ -37,7 +37,7 @@ st.markdown("""
 
 st.markdown(
     "<h4 style='text-align: center;' " 
-    "color: #FFFFFF;" 
+    "color: #008000;" 
     "'><strong>ASK ME BEFORE YOU GO BROKE</strong></h4>",
     unsafe_allow_html=True)
 
