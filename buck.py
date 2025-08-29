@@ -111,14 +111,14 @@ st.markdown(
 
         /* Headings */
         h1, h2, h3, h4, h5, h6 {
-            color: #76ca76;
+            color: #008000;
             position: relative;
             z-index: 20;
         }
 
         /* General text */
         .stMarkdown, .stText {
-            color: #e7ffe7;
+            color: #008000;
             position: relative;
             z-index: 20;
         }
