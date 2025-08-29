@@ -156,7 +156,7 @@ if 'buck_avatars_list' not in st.session_state:
 # This function is if the user wishes to add more icons for the user
 @st.dialog("Choose Your Avatar")
 def user_avatars():
-    st.markdown(f"## Your Current Avatar: {st.session_state.user_avatar}")
+    st.markdown(f"### Your Current Avatar: {st.session_state.user_avatar}")
     # To organize the avatars in the middle of the screen
     col1, col2, col3 = st.columns([1, 7, 1])
     # To let the user choose which icon they want
@@ -189,7 +189,7 @@ def user_avatars():
 # This function is if the user wishes to add more icons for the chatbot
 @st.dialog("Add Your Avatar")
 def add_buck_avatar():
-    st.markdown(f"## Buck's Current Avatar: {st.session_state.buck_avatar}")
+    st.markdown(f"### Buck's Current Avatar: {st.session_state.buck_avatar}")
     col1, col2, col3 = st.columns([1, 7, 1])
     # To let the user choose which icon they want
     with col2.container(border=False, height=180):
