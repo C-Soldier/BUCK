@@ -323,7 +323,7 @@ with st.sidebar:
                 st.markdown(f"**Current Talk: {key}**")
     
     # To start a new conversation with the chatbot
-    if st.button("💲New Money Talk", width=220):
+    if st.button("**💲New Money Talk**", width=220):
         st.session_state.chats = []
         if st.session_state.chat_session == casual_model.start_chat():
             st.session_state.chat_session = casual_model.start_chat()
@@ -347,14 +347,14 @@ with st.sidebar:
     st.divider()
 
     # This is used to activate the delete chats function
-    if st.button("Delete Talks💀", width=220):
+    if st.button("**Delete Talks💀**", width=220):
         if len(st.session_state.recentChats) > 0:
             delete()
         else:
             st.toast("There are no talks to delete")
     
     # This is used to delete ALL the conversations
-    if st.button("Delete All Talks☠", width=220):
+    if st.button("**Delete All Talks☠**", width=220):
         if len(st.session_state.recentChats) > 0:
             st.session_state.recentChats.clear()
             st.session_state.chats.clear()
@@ -388,7 +388,7 @@ askGemini(text, st.session_state.chat_session)
 if prompt and prompt.text and prompt["files"]:
     # To display the inputs from the user in the Streamlit app
     display(prompt["files"][0])
-    st.chat_message("user", avatar=st.session_state.user_avatar).markdown(prompt.text)
+    st.chat_message("user", avatar=st.session_state.user_avatar).markdown(f**{prompt.text}**)
     
     # To store each of the messages
     st.session_state.chats.append({'role': 'user', 'content': prompt["files"][0]})
@@ -406,14 +406,14 @@ if prompt and prompt.text and prompt["files"]:
         chat = chatImageGemini(prompt.text, prompt["files"][0].read(), st.session_state.chat_session)
 
     # Display the response from the chatbot about the image
-    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(f**{chat}**)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})    
 
 elif prompt and prompt.text:
     # To display the messages from the user in the Streamlit app
-    st.chat_message("user", avatar=st.session_state.user_avatar).markdown(prompt.text)
+    st.chat_message("user", avatar=st.session_state.user_avatar).markdown(f**{prompt.text}**)
     
     # To store each of the messages
     st.session_state.chats.append({'role': 'user', 'content': prompt.text})
@@ -422,7 +422,7 @@ elif prompt and prompt.text:
     chat = askGemini(prompt.text, st.session_state.chat_session)
     
     # Show chatbot responses
-    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(f**{chat}**)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})
@@ -448,7 +448,7 @@ elif prompt and prompt["files"]:
         chat = showImageGemini(prompt["files"][0].read(), st.session_state.chat_session)
     
     # Display the response from the chatbot about the image
-    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(chat)
+    st.chat_message("assistant", avatar=st.session_state.buck_avatar).markdown(f**{chat}**)
     
     # To store the chatbot responses in the session state
     st.session_state.chats.append({'role': 'assistant', 'content': chat})
